@@ -7,7 +7,7 @@ import pandas
 
 data = pandas.read_csv("data/french_words.csv")
 to_learn = data.to_dict(orient="records")
-
+current_card = {}
 
 # back_img = PhotoImage(file='images/card_back.png')
 
@@ -17,24 +17,28 @@ to_learn = data.to_dict(orient="records")
 # ------------------------Reading data-----------------------------------------------------------#
 def next_card():
     """Show a card"""
-    random_word_dict = random.choice(to_learn)
-    print(random_word_dict)
-    random_word_french = random_word_dict["French"]
+    global flip_timer,current_card
+    window.after_cancel(flip_timer)
+    current_card = random.choice(to_learn)
+    print(current_card)
+    random_word_french = current_card["French"]
     card_canvas.itemconfig(front_img, image=front_img)
-    card_canvas.itemconfig(card_title, text="French",)
-    card_canvas.itemconfig(card_word, text=f"{random_word_french}",)
-    window.after(3000, flip_card,random_word_dict)
+    card_canvas.itemconfig(card_title, text="French", )
+    card_canvas.itemconfig(card_word, text=f"{random_word_french}", )
+    filp_timer = window.after(3000, flip_card)
 
 
-def flip_card(random_word_dict):
+
+
+def flip_card():
     """FLip a card after 3 sec"""
     print("after")
     # random_word_dict = random.choice(to_learn)
-    print(random_word_dict)
-    random_word_english = random_word_dict["English"]
+    print(current_card)
+    random_word_english = current_card["English"]
     card_canvas.itemconfig(background_img, image=back_image)
-    card_canvas.itemconfig(card_title, text="English",fill="white")
-    card_canvas.itemconfig(card_word, text=f"{random_word_english}",fill="white")
+    card_canvas.itemconfig(card_title, text="English", fill="white")
+    card_canvas.itemconfig(card_word, text=f"{random_word_english}", fill="white")
 
 
 #
@@ -43,7 +47,7 @@ def flip_card(random_word_dict):
 window = Tk()
 window.title("flashy")
 window.config(padx=30, pady=30, bg=BACKGROUND_COLOR, highlightthickness=0)
-
+flip_timer = window.after(3000, flip_card, )
 card_canvas = Canvas(width=800, height=526, highlightthickness=0, bg=BACKGROUND_COLOR)
 front_img = PhotoImage(file='images/card_front.png')
 back_image = PhotoImage(file="images/card_back.png")
