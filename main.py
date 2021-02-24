@@ -1,23 +1,22 @@
 """In this project we will built a FLash app"""
-BACKGROUND_COLOR = "#B1DDC6"
+
 import random
 from tkinter import *
 
 import pandas
 
+BACKGROUND_COLOR = "#B1DDC6"
 data = pandas.read_csv("data/french_words.csv")
 to_learn = data.to_dict(orient="records")
 current_card = {}
 
-# back_img = PhotoImage(file='images/card_back.png')
 
 # print(to_learn[0]["French"])
-
 
 # ------------------------Reading data-----------------------------------------------------------#
 def next_card():
     """Show a card"""
-    global flip_timer,current_card
+    global flip_timer, current_card
     window.after_cancel(flip_timer)
     current_card = random.choice(to_learn)
     print(current_card)
@@ -25,14 +24,11 @@ def next_card():
     card_canvas.itemconfig(front_img, image=front_img)
     card_canvas.itemconfig(card_title, text="French", )
     card_canvas.itemconfig(card_word, text=f"{random_word_french}", )
-    filp_timer = window.after(3000, flip_card)
-
-
+    window.after(3000, flip_card)
 
 
 def flip_card():
     """FLip a card after 3 sec"""
-    print("after")
     # random_word_dict = random.choice(to_learn)
     print(current_card)
     random_word_english = current_card["English"]
