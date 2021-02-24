@@ -6,12 +6,16 @@ from tkinter import *
 import pandas
 
 BACKGROUND_COLOR = "#B1DDC6"
-data = pandas.read_csv("data/french_words.csv")
-to_learn = data.to_dict(orient="records")
 current_card = {}
+to_learn = {}
+try:
+    data = pandas.read_csv("data/words_to_learn.csv")
+except FileNotFoundError:
+    orignal_data = pandas.read_csv("data/french_words.csv")
+    to_learn = orignal_data.to_dict(orient="records")
+else:
+    to_learn = data.to_dict(orient="records")
 
-
-# print(to_learn[0]["French"])
 
 # ------------------------Reading data-----------------------------------------------------------#
 def next_card():
@@ -19,7 +23,6 @@ def next_card():
     global flip_timer, current_card
     window.after_cancel(flip_timer)
     current_card = random.choice(to_learn)
-    print(current_card)
     random_word_french = current_card["French"]
     card_canvas.itemconfig(front_img, image=front_img)
     card_canvas.itemconfig(card_title, text="French", )
@@ -30,14 +33,24 @@ def next_card():
 def flip_card():
     """FLip a card after 3 sec"""
     # random_word_dict = random.choice(to_learn)
-    print(current_card)
     random_word_english = current_card["English"]
     card_canvas.itemconfig(background_img, image=back_image)
     card_canvas.itemconfig(card_title, text="English", fill="white")
     card_canvas.itemconfig(card_word, text=f"{random_word_english}", fill="white")
 
 
-#
+# print(to_learn[0]["French"]) ----------------------------Removing Data -----------------------------# When the user
+# TODO: presses on the ✅ button, it means that they know the current word on the flashcard and that word should be
+#  removed from the list of words that might come up.
+def is_known():
+    """This function will remove a known letter from a file"""
+    to_learn.remove(current_card)
+    print(len(to_learn))
+    # Now i save a word list which we did not learn then we have to save it to new file
+    data = pandas.DataFrame(to_learn)
+    data.to_csv("data/words_to_learn.csv",index=False)
+    next_card()
+
 
 # ------------------------------------------- creating a window----------------------------------#
 window = Tk()
@@ -60,7 +73,7 @@ wrong_button = Button(image=cross_button_image, highlightthickness=0, command=ne
 wrong_button.grid(row=1, column=0)
 
 check_button_image = PhotoImage(file="images/right.png")
-right_button = Button(image=check_button_image, highlightthickness=0, command=next_card)
+right_button = Button(image=check_button_image, highlightthickness=0, command=is_known)
 right_button.grid(row=1, column=1)
 
 next_card()
